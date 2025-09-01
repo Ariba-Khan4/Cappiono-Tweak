@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Place Your Order</title>
+  <link rel="stylesheet" href="styles.css"> <!-- reuse your cafe CSS -->
+</head>
+<body>
+  <div class="container">
+    <h2>Place Your Order</h2>
+    <form id="orderForm">
+      <label>Name:</label>
+      <input type="text" id="name" required>
+
+      <label>Address:</label>
+      <textarea id="address" required></textarea>
+
+      <label>Pincode:</label>
+      <input type="text" id="pincode" required>
+
+      <label>Phone:</label>
+      <input type="tel" id="phone" required>
+
+      <label>Payment Mode:</label>
+      <select id="payment" required>
+        <option value="COD">Cash on Delivery</option>
+        <option value="UPI">UPI</option>
+        <option value="Card">Card</option>
+      </select>
+
+      <label>Item:</label>
+      <select id="item" required>
+        <option value="Chocolape Frappe" data-price="299">Chocolape Frappe - ₹299</option>
+        <option value="Paradiso Tiramisu" data-price="399">Paradiso Tiramisu - ₹399</option>
+        <option value="Cold Brew" data-price="269">Cold Brew - ₹269</option>
+      </select>
+
+      <label>Tweak Option:</label>
+      <select id="tweak">
+        <option value="None" data-price="0">No Tweak</option>
+        <option value="Extra Shot" data-price="50">Extra Shot - ₹50</option>
+        <option value="Almond Milk" data-price="70">Almond Milk - ₹70</option>
+      </select>
+
+      <label>Quantity:</label>
+      <input type="number" id="quantity" min="1" value="1" required>
+
+      <button type="submit" class="btn">Confirm Order</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("orderForm").addEventListener("submit", function(e){
+      e.preventDefault();
+
+      // Collect values
+      const name = document.getElementById("name").value;
+      const address = document.getElementById("address").value;
+      const pincode = document.getElementById("pincode").value;
+      const phone = document.getElementById("phone").value;
+      const payment = document.getElementById("payment").value;
+      const item = document.getElementById("item");
+      const itemName = item.options[item.selectedIndex].text;
+      const itemPrice = parseInt(item.options[item.selectedIndex].getAttribute("data-price"));
+
+      const tweak = document.getElementById("tweak");
+      const tweakName = tweak.options[tweak.selectedIndex].text;
+      const tweakPrice = parseInt(tweak.options[tweak.selectedIndex].getAttribute("data-price"));
+
+      const quantity = parseInt(document.getElementById("quantity").value);
+
+      const total = (itemPrice + tweakPrice) * quantity;
+
+      // Save to localStorage (to pass data to invoice page)
+      localStorage.setItem("orderData", JSON.stringify({
+        name, address, pincode, phone, payment,
+        itemName, tweakName, quantity, total
+      }));
+
+      // Redirect to invoice page
+      window.location.href = "invoice.html";
+    });
+  </script>
+</body>
+</html>
