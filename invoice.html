@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Order Invoice</h2>
+    <div id="invoiceDetails"></div>
+    <a href="Cappiono_tweak.html" class="btn">Back to Home</a>
+  </div>
+
+  <script>
+    const orderData = JSON.parse(localStorage.getItem("orderData"));
+
+    if(orderData){
+      document.getElementById("invoiceDetails").innerHTML = `
+        <p><strong>Name:</strong> ${orderData.name}</p>
+        <p><strong>Address:</strong> ${orderData.address}</p>
+        <p><strong>Pincode:</strong> ${orderData.pincode}</p>
+        <p><strong>Phone:</strong> ${orderData.phone}</p>
+        <p><strong>Payment Mode:</strong> ${orderData.payment}</p>
+        <p><strong>Item:</strong> ${orderData.itemName}</p>
+        <p><strong>Tweak:</strong> ${orderData.tweakName}</p>
+        <p><strong>Quantity:</strong> ${orderData.quantity}</p>
+        <p><strong>Total:</strong> ₹${orderData.total}</p>
+      `;
+    } else {
+      document.getElementById("invoiceDetails").innerHTML = "<p>No order found!</p>";
+    }
+  </script>
+</body>
+</html>
