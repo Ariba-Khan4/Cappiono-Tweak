@@ -3,8 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Place Your Order</title>
-  <link rel="stylesheet" href="styles.css"> <!-- reuse your cafe CSS -->
+  <title>Place Your Order - Cappiono Tweak Café</title>
+  <style>
+    /* Same theme as Cappiono Tweak */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #f9f5f0;
+      color: #3a2e26;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 80px auto;
+      padding: 40px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      color: #3a2e26;
+      text-align: center;
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    h2::after {
+      content: '';
+      display: block;
+      width: 70px;
+      height: 4px;
+      background: #c7a17a;
+      margin: 12px auto 0;
+      border-radius: 2px;
+    }
+
+    form label {
+      display: block;
+      margin: 15px 0 8px;
+      font-weight: 500;
+      color: #3a2e26;
+    }
+
+    form input, 
+    form textarea, 
+    form select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fdfdfc;
+      transition: border 0.3s ease;
+    }
+
+    form input:focus, 
+    form textarea:focus, 
+    form select:focus {
+      outline: none;
+      border-color: #c7a17a;
+      box-shadow: 0 0 6px rgba(199, 161, 122, 0.3);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 25px;
+      background: #c7a17a;
+      color: white;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: #a58562;
+      transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        margin: 40px 20px;
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -72,13 +177,13 @@
 
       const total = (itemPrice + tweakPrice) * quantity;
 
-      // Save to localStorage (to pass data to invoice page)
+      // Save to localStorage
       localStorage.setItem("orderData", JSON.stringify({
         name, address, pincode, phone, payment,
         itemName, tweakName, quantity, total
       }));
 
-      // Redirect to invoice page
+      // Redirect
       window.location.href = "invoice.html";
     });
   </script>
