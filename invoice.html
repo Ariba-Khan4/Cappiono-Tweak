@@ -5,132 +5,122 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invoice - Cappiono Tweak Café</title>
   <style>
-    /* Cappiono Tweak Theme */
-    * {
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f9f5f0;
+      color: #3a2e26;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
     }
-
-    body {
-      background-color: #f9f5f0;
-      color: #3a2e26;
-      line-height: 1.6;
-    }
-
     .container {
       max-width: 700px;
-      margin: 80px auto;
+      margin: 60px auto;
+      background: #fff;
       padding: 40px;
-      background: white;
       border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
     }
-
     h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.2rem;
-      color: #3a2e26;
       text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
       margin-bottom: 25px;
-      position: relative;
     }
-
-    h2::after {
-      content: '';
-      display: block;
-      width: 70px;
-      height: 4px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
       background: #c7a17a;
-      margin: 12px auto 0;
-      border-radius: 2px;
+      color: white;
     }
-
-    #invoiceDetails {
-      background: #fdfdfc;
-      border: 1px solid #eee;
-      border-radius: 10px;
-      padding: 25px;
-      margin-bottom: 30px;
-    }
-
-    #invoiceDetails p {
-      margin: 10px 0;
-      font-size: 1rem;
-    }
-
-    #invoiceDetails strong {
-      color: #c7a17a;
-    }
-
     .total {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #3a2e26;
-      margin-top: 15px;
-      padding-top: 10px;
-      border-top: 2px dashed #c7a17a;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: right;
+      margin-top: 20px;
     }
-
     .btn {
-      display: inline-block;
-      margin-top: 10px;
+      display: block;
+      text-align: center;
+      margin-top: 25px;
       background: #c7a17a;
       color: white;
       padding: 12px 28px;
-      border: none;
       border-radius: 30px;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
       text-decoration: none;
-      text-align: center;
     }
-
     .btn:hover {
       background: #a58562;
-      transform: translateY(-2px);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .container {
-        margin: 40px 20px;
-        padding: 20px;
-      }
-
-      h2 {
-        font-size: 1.8rem;
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Order Invoice</h2>
-    <div id="invoiceDetails"></div>
+    <table>
+      <tbody id="invoiceDetails"></tbody>
+    </table>
+    <p class="total" id="totalAmount"></p>
     <a href="index.html" class="btn">Back to Home</a>
   </div>
 
-  <script>
-    const orderData = JSON.parse(localStorage.getItem("orderData"));
+  <!-- Firebase Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
 
-    if(orderData){
-      document.getElementById("invoiceDetails").innerHTML = `
-        <p><strong>Name:</strong> ${orderData.name}</p>
-        <p><strong>Address:</strong> ${orderData.address}</p>
-        <p><strong>Pincode:</strong> ${orderData.pincode}</p>
-        <p><strong>Phone:</strong> ${orderData.phone}</p>
-        <p><strong>Payment Mode:</strong> ${orderData.payment}</p>
-        <p><strong>Item:</strong> ${orderData.itemName}</p>
-        <p><strong>Tweak:</strong> ${orderData.tweakName}</p>
-        <p><strong>Quantity:</strong> ${orderData.quantity}</p>
-        <p class="total"><strong>Total:</strong> ₹${orderData.total}</p>
-      `;
-    } else {
-      document.getElementById("invoiceDetails").innerHTML = "<p>No order found!</p>";
+    // 🔹 Same config you used in order.html
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Init Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function loadLatestOrder() {
+      try {
+        // Get most recent order (sorted by timestamp)
+        const q = query(collection(db, "orders"), orderBy("timestamp", "desc"), limit(1));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const order = querySnapshot.docs[0].data();
+
+          // Fill invoice details
+          document.getElementById("invoiceDetails").innerHTML = `
+            <tr><th>Name</th><td>${order.name}</td></tr>
+            <tr><th>Address</th><td>${order.address}</td></tr>
+            <tr><th>Pincode</th><td>${order.pincode}</td></tr>
+            <tr><th>Phone</th><td>${order.phone}</td></tr>
+            <tr><th>Payment</th><td>${order.payment}</td></tr>
+            <tr><th>Item</th><td>${order.itemName}</td></tr>
+            <tr><th>Tweak</th><td>${order.tweakName}</td></tr>
+            <tr><th>Quantity</th><td>${order.quantity}</td></tr>
+          `;
+          document.getElementById("totalAmount").textContent = `Total: ₹${order.total}`;
+        } else {
+          document.getElementById("invoiceDetails").innerHTML = `<tr><td colspan="2">❌ No order found</td></tr>`;
+        }
+      } catch (err) {
+        console.error("Error loading invoice:", err);
+      }
     }
+
+    loadLatestOrder();
   </script>
 </body>
 </html>
