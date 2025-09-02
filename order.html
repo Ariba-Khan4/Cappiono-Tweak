@@ -139,18 +139,18 @@
         <option value="None" data-price="0">No Tweak</option>
         <option value="Chocolape Frappe" data-price="299">Chocolape Frappe - ₹299</option>
         <option value="Paradiso Tiramisu" data-price="399">Paradiso Tiramisu - ₹399</option>
-        <option value="Aegean Gold Sandwich" data-price="349">Paradiso Tiramisu - ₹349</option>
+        <option value="Aegean Gold Sandwich" data-price="349">Aegean Gold Sandwich - ₹349</option>
         <option value="Cold Brew" data-price="269">Cold Brew - ₹269</option>
-        <option value="AAvocado Toast" data-price="439">Paradiso Tiramisu - ₹439</option>
-        <option value="Blueberry Pancakes" data-price="459">Paradiso Tiramisu - ₹459</option>
+        <option value="Avocado Toast" data-price="439">Avocado Toast - ₹439</option>
+        <option value="Blueberry Pancakes" data-price="459">Blueberry Pancakes - ₹459</option>
       </select>
 
       <label>Tweak Option:</label>
       <select id="tweak">
         <option value="None" data-price="0">No Tweak</option>
-        <option value="Spiced Mocha Fusion" data-price="439">Extra Shot - ₹439</option>
-        <option value="Tropical Coconut Latte" data-price="379">Almond Milk - ₹379</option>
-        <option value="Honey Oat Cortado" data-price="399">Almond Milk - ₹399</option>
+        <option value="Spiced Mocha Fusion" data-price="50">Spiced Mocha Fusion - ₹50</option>
+        <option value="Tropical Coconut Latte" data-price="40">Tropical Coconut Latte - ₹40</option>
+        <option value="Honey Oat Cortado" data-price="60">Honey Oat Cortado - ₹60</option>
       </select>
 
       <label>Quantity:</label>
@@ -160,8 +160,28 @@
     </form>
   </div>
 
-  <script>
-    document.getElementById("orderForm").addEventListener("submit", function(e){
+  <!-- Firebase Script -->
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+    // 🔹 Paste your Firebase config from Firebase Console here
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Handle form submission
+    document.getElementById("orderForm").addEventListener("submit", async function(e) {
       e.preventDefault();
 
       // Collect values
@@ -170,6 +190,7 @@
       const pincode = document.getElementById("pincode").value;
       const phone = document.getElementById("phone").value;
       const payment = document.getElementById("payment").value;
+
       const item = document.getElementById("item");
       const itemName = item.options[item.selectedIndex].text;
       const itemPrice = parseInt(item.options[item.selectedIndex].getAttribute("data-price"));
@@ -179,17 +200,23 @@
       const tweakPrice = parseInt(tweak.options[tweak.selectedIndex].getAttribute("data-price"));
 
       const quantity = parseInt(document.getElementById("quantity").value);
-
       const total = (itemPrice + tweakPrice) * quantity;
 
-      // Save to localStorage
-      localStorage.setItem("orderData", JSON.stringify({
-        name, address, pincode, phone, payment,
-        itemName, tweakName, quantity, total
-      }));
+      try {
+        // Save to Firestore
+        await addDoc(collection(db, "orders"), {
+          name, address, pincode, phone, payment,
+          itemName, tweakName, quantity, total,
+          timestamp: new Date()
+        });
 
-      // Redirect
-      window.location.href = "invoice.html";
+        alert("✅ Order placed successfully!");
+        window.location.href = "invoice.html";
+
+      } catch (err) {
+        console.error("Error adding order: ", err);
+        alert("❌ Failed to save order.");
+      }
     });
   </script>
 
